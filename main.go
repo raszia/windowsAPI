@@ -3,27 +3,17 @@ package main
 import (
 	"crypto/tls"
 	"crypto/x509"
-	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
 	"time"
+	"windows/dns"
+	"windows/services"
+	"windows/utility"
 
 	"github.com/gorilla/mux"
-	"github.com/myco/dns"
 )
-
-func notFoundHandler(w http.ResponseWriter, r *http.Request) {
-	respondWithJSON(w, http.StatusBadRequest, map[string]string{"message": "Could not get the requested route."})
-}
-
-func respondWithJSON(w http.ResponseWriter, code int, payload interface{}) {
-	response, _ := json.Marshal(payload)
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(code)
-	w.Write(response)
-}
 
 const (
 	serverPort = ":3111"
@@ -34,16 +24,15 @@ const (
 
 func main() {
 	router := mux.NewRouter()
-	router.NotFoundHandler = http.HandlerFunc(notFoundHandler)
+	router.NotFoundHandler = http.HandlerFunc(utility.HttpNotFoundHandler)
 
 	caCert, err := ioutil.ReadFile(CA)
 	if err != nil {
 		log.Fatal(err)
 	}
 	router.Methods("POST").Path("/dns").HandlerFunc(dns.Handler)
-	router.Methods("GET").Path("/").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		respondWithJSON(w, http.StatusOK, map[string]string{"message": "Welcome to myco windows API service"})
-	})
+	router.Methods("POST").Path("/services").HandlerFunc(services.Handler)
+	router.Methods("GET").Path("/").HandlerFunc(utility.HttpNotFoundHandler)
 
 	caCertPool := x509.NewCertPool()
 	caCertPool.AppendCertsFromPEM(caCert)
