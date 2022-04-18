@@ -1,10 +1,7 @@
 package dns
 
 import (
-	"bytes"
-	"fmt"
-	"os/exec"
-	"strings"
+	"windows/command"
 )
 
 const (
@@ -15,76 +12,23 @@ const (
 	RecordTypePTR   = "PTR"
 	RecordTypeSRV   = "SRV"
 	RecordTypeAAA   = "AAA"
+
+	RecordArgDelCmd = "/recordDelete"
+	RecordArgAddCmd = "/recordAdd"
 )
-
-type dnsCommandStruct struct {
-	command string
-	args    []string
-}
-
-func (dnscmd *dnsCommandStruct) recordType(name string) *dnsCommandStruct {
-	dnscmd.args = append(dnscmd.args, name)
-	return dnscmd
-}
-
-func (dnscmd *dnsCommandStruct) recordDelete() *dnsCommandStruct {
-	dnscmd.args = append(dnscmd.args, "/recordDelete")
-	return dnscmd
-}
-func (dnscmd *dnsCommandStruct) recordAdd() *dnsCommandStruct {
-	dnscmd.args = append(dnscmd.args, "/recordAdd")
-	return dnscmd
-}
-func (dnscmd *dnsCommandStruct) zoneName(name string) *dnsCommandStruct {
-	dnscmd.args = append(dnscmd.args, name)
-	return dnscmd
-}
-
-func (dnscmd *dnsCommandStruct) recordName(name string) *dnsCommandStruct {
-	dnscmd.args = append(dnscmd.args, name)
-	return dnscmd
-}
-func (dnscmd *dnsCommandStruct) recordData(data string) *dnsCommandStruct {
-	dnscmd.args = append(dnscmd.args, data)
-	return dnscmd
-}
-
-func (dnscmd *dnsCommandStruct) force() *dnsCommandStruct {
-	dnscmd.args = append(dnscmd.args, "/f")
-	return dnscmd
-}
-
-func (dnscmd *dnsCommandStruct) print() {
-	fmt.Println(dnscmd.command, strings.Join(dnscmd.args, " "))
-}
-
-func (dnscmd *dnsCommandStruct) Run() error {
-	fmt.Println(dnscmd.command, strings.Join(dnscmd.args, " "))
-	x := exec.Command(dnscmd.command, dnscmd.args...)
-
-	var buff, errBuf bytes.Buffer
-	x.Stdout = &buff
-	x.Stderr = &errBuf
-	err := x.Run()
-	return err
-
-}
-
-func dnsCommand() *dnsCommandStruct {
-
-	dnscmd := &dnsCommandStruct{}
-	dnscmd.command = "dnscmd"
-	return dnscmd
-}
 
 //microsoft don't support edit. we must delete and add the record again
 func (reqEditRecord *EditRecordStruct) execute(action string) error {
 
 	if action != "addRecord" {
-		err := dnsCommand().recordDelete().
-			zoneName(reqEditRecord.ZoneName).recordName(reqEditRecord.RecordName).
-			recordType(reqEditRecord.RecordType).force().Run()
-		if err != nil {
+		//delete a record
+		if err := command.CmdCommand(command.CMDdns).
+			ArgAdd(RecordArgDelCmd).
+			ArgAdd(reqEditRecord.ZoneName).
+			ArgAdd(reqEditRecord.RecordName).
+			ArgAdd(reqEditRecord.RecordType).
+			ArgAdd(command.CMDArgForce).
+			Run(); err != nil {
 			return err
 		}
 		if action == "deleteRecord" {
@@ -93,10 +37,13 @@ func (reqEditRecord *EditRecordStruct) execute(action string) error {
 	}
 
 	if action != "deleteRecord" {
-		err := dnsCommand().recordAdd().
-			zoneName(reqEditRecord.ZoneName).recordName(reqEditRecord.RecordName).
-			recordType(reqEditRecord.RecordType).recordData(reqEditRecord.RecordData).Run()
-		if err != nil {
+		if err := command.CmdCommand(command.CMDdns).
+			ArgAdd(RecordArgAddCmd).
+			ArgAdd(reqEditRecord.ZoneName).
+			ArgAdd(reqEditRecord.RecordName).
+			ArgAdd(reqEditRecord.RecordType).
+			ArgAdd(reqEditRecord.RecordData).
+			Run(); err != nil {
 			return err
 		}
 	}
