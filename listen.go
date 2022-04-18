@@ -9,11 +9,11 @@ import (
 )
 
 const (
-	HTTPSAddr = ":8443"
-	HTTPAddr  = ":8080"
-	CA        = "./cert/CA.pem"
-	Key       = "./cert/ss.key"
-	Cert      = "./cert/ss.crt"
+	HTTPSAddrDefault = ":8443"
+	HTTPAddrDefault  = ":8080"
+	CA               = "./cert/CA.pem"
+	Key              = "./cert/ss.key"
+	Cert             = "./cert/ss.crt"
 )
 
 func listenHTTP(router *mux.Router) {
