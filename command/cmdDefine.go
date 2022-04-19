@@ -1,7 +1,8 @@
 package command
 
 const (
-	CMDnet      = "net"
-	CMDdns      = "dnscmd"
-	CMDArgForce = "/f"
+	CMDnet        = "net"
+	CMDdns        = "dnscmd"
+	CMDsystemInfo = "systeminfo"
+	CMDArgForce   = "/f"
 )

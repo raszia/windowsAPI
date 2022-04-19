@@ -11,6 +11,10 @@ type cmdCommandStruct struct {
 	command string
 	args    []string
 }
+type cmdResultStruct struct {
+	stdOut bytes.Buffer
+	stdErr bytes.Buffer
+}
 
 func CmdCommand(theCommand string) *cmdCommandStruct {
 
@@ -32,9 +36,24 @@ func (cmd *cmdCommandStruct) Print() {
 func (cmd *cmdCommandStruct) Run() error {
 	x := exec.Command(cmd.command, cmd.args...)
 
-	var buff, errBuf bytes.Buffer
-	x.Stdout = &buff
-	x.Stderr = &errBuf
 	err := x.Run()
 	return err
+}
+
+//run and get output
+func (cmd *cmdCommandStruct) RunOutput() (*cmdResultStruct, error) {
+	x := exec.Command(cmd.command, cmd.args...)
+	result := &cmdResultStruct{}
+	x.Stdout = &result.stdOut
+	x.Stderr = &result.stdErr
+	err := x.Run()
+	return result, err
+}
+
+func (res *cmdResultStruct) GetStdOut() bytes.Buffer {
+	return res.stdOut
+}
+
+func (res *cmdResultStruct) GetStdErr() bytes.Buffer {
+	return res.stdErr
 }
