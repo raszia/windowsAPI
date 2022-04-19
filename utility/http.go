@@ -7,6 +7,11 @@ import (
 	"net/http"
 )
 
+type ResStruct struct {
+	Status string `json:"status"`
+	Msg    string `json:"msg"`
+}
+
 func HttpBodyUnmarshal(reqBody io.ReadCloser, model interface{}) error {
 	body, err := ioutil.ReadAll(reqBody)
 	if err != nil {

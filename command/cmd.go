@@ -2,7 +2,9 @@ package command
 
 import (
 	"bytes"
+	"fmt"
 	"os/exec"
+	"strings"
 )
 
 type cmdCommandStruct struct {
@@ -21,6 +23,10 @@ func CmdCommand(theCommand string) *cmdCommandStruct {
 func (cmd *cmdCommandStruct) ArgAdd(arg string) *cmdCommandStruct {
 	cmd.args = append(cmd.args, arg)
 	return cmd
+}
+
+func (cmd *cmdCommandStruct) Print() {
+	fmt.Println(cmd.command, strings.Join(cmd.args, " "))
 }
 
 func (cmd *cmdCommandStruct) Run() error {

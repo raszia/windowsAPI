@@ -3,6 +3,7 @@ package main
 import (
 	"net/http"
 	"windows/dns"
+	"windows/ldap"
 	"windows/services"
 	"windows/utility"
 
@@ -21,4 +22,6 @@ func AddV1Routes(router *mux.Router) {
 	router.Methods("POST").Path("/dns").HandlerFunc(dns.Handler)
 	router.Methods("POST").Path("/services").HandlerFunc(services.Handler)
 	router.Methods("GET").Path("/").HandlerFunc(utility.HttpNotFoundHandler)
+	// router.Methods("POST").Path("/ldap/userInfo").HandlerFunc(ldap.Handler)
+	ldap.SubRoute(router.PathPrefix("/ldap").Subrouter())
 }
