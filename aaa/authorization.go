@@ -1,7 +1,6 @@
 package aaa
 
 import (
-	"fmt"
 	"net/http"
 
 	"windows/config"
@@ -29,7 +28,5 @@ func isAuthorize(user, pass string, r *http.Request) bool {
 }
 
 func SetEnforcer() {
-	fmt.Printf("config.MainConfig.AAA().PolicyFilePath: %v\n", config.MainConfig.AAA().PolicyFilePath)
-	fmt.Printf("config.MainConfig.AAA().PolicyModelPath: %v\n", config.MainConfig.AAA().PolicyModelPath)
 	enforcer, enforcerErr = casbin.NewEnforcer(config.MainConfig.AAA().PolicyFilePath, config.MainConfig.AAA().PolicyModelPath)
 }
