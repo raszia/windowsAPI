@@ -4,15 +4,20 @@ go 1.17
 
 require (
 	github.com/casbin/casbin/v2 v2.44.2
+	github.com/BurntSushi/toml v1.1.0
 	github.com/go-ldap/ldap/v3 v3.4.3
 	github.com/gorilla/mux v1.8.0
 	github.com/shirou/gopsutil/v3 v3.22.3
 	golang.org/x/text v0.3.7
+	gopkg.in/alecthomas/kingpin.v2 v2.2.6
 )
 
 require (
 	github.com/Azure/go-ntlmssp v0.0.0-20211209120228-48547f28849e // indirect
 	github.com/Knetic/govaluate v3.0.1-0.20171022003610-9aa49832a739+incompatible // indirect
+	github.com/alecthomas/template v0.0.0-20190718012654-fb15b899a751 // indirect
+	github.com/alecthomas/units v0.0.0-20211218093645-b94a6e3cc137 // indirect
+	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/go-asn1-ber/asn1-ber v1.5.4 // indirect
 	github.com/go-ole/go-ole v1.2.6 // indirect
 	github.com/lufia/plan9stats v0.0.0-20211012122336-39d0f177ccd0 // indirect

@@ -15,18 +15,18 @@ func SubRoute(router *mux.Router) {
 	// router.HandleFunc("/info", getInfoHandler).Methods(http.MethodGet)
 }
 
-// func memHandler(w http.ResponseWriter, r *http.Request) {
+func memHandler(w http.ResponseWriter, r *http.Request) {
 
-// 	vmem, err := Getvmem(r.Context())
-// 	if err != nil {
-// 		utility.HttpConnectionClose(w, r, http.StatusNotAcceptable, &utility.ResStruct{
-// 			Msg:    err.Error(),
-// 			Status: "failed",
-// 		})
-// 		return
-// 	}
-// 	utility.HttpSendOK(w, r, vmem)
-// }
+	vmem, err := Getvmem(r.Context())
+	if err != nil {
+		utility.HttpConnectionClose(w, r, http.StatusNotAcceptable, &utility.ResStruct{
+			Msg:    err.Error(),
+			Status: "failed",
+		})
+		return
+	}
+	utility.HttpSendOK(w, r, vmem)
+}
 
 func infoHandler(w http.ResponseWriter, r *http.Request) {
 

@@ -4,27 +4,20 @@ import (
 	"log"
 	"net/http"
 	"time"
+	"windows/config"
 
 	"github.com/gorilla/mux"
 )
 
-const (
-	HTTPSAddrDefault = ":8443"
-	HTTPAddrDefault  = ":8080"
-	CA               = "./cert/CA.pem"
-	Key              = "./cert/ss.key"
-	Cert             = "./cert/ss.crt"
-)
-
 func listenHTTP(router *mux.Router) {
 	httpServer := &http.Server{
-		Addr:           HTTPAddr,
+		Addr:           config.MainConfig.WebServerS.HttpAddr,
 		Handler:        router,
 		ReadTimeout:    30 * time.Second,
 		WriteTimeout:   30 * time.Second,
 		MaxHeaderBytes: 1 << 20,
 	}
-	log.Println("HTTP listening on Addr:", HTTPAddr)
+	log.Println("HTTP server listen:", httpServer.Addr)
 	log.Fatal(httpServer.ListenAndServe())
 
 }
@@ -44,15 +37,13 @@ func listenHTTPS(router *mux.Router) {
 	// http.DefaultTransport.(*http.Transport).TLSClientConfig = tlsConfig
 	httpServer := &http.Server{
 		// TLSConfig:      tlsConfig,
-		Addr:           HTTPSAddr,
+		Addr:           config.MainConfig.WebServerS.HttpsAddr,
 		Handler:        router,
 		ReadTimeout:    30 * time.Second,
 		WriteTimeout:   30 * time.Second,
 		MaxHeaderBytes: 1 << 20,
 	}
 
-	log.Println("HTTPS listening on Addr:", HTTPSAddr)
-
-	//Start HTTP Server
-	log.Fatal(httpServer.ListenAndServeTLS(Cert, Key))
+	log.Println("HTTPS server listen:", httpServer.Addr)
+	log.Fatal(httpServer.ListenAndServeTLS(config.MainConfig.WebServerS.Cert, config.MainConfig.WebServerS.Key))
 }

@@ -1,0 +1,6 @@
+[webServer]
+HTTPSAddr = ":8443"
+HTTPAddr  = ":8081"
+CA        = "./cert/CA.pem"
+Key       = "./cert/ss.key"
+Cert      = "./cert/ss.crt"
