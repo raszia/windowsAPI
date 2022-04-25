@@ -3,10 +3,11 @@ module windows
 go 1.17
 
 require (
-	github.com/casbin/casbin/v2 v2.44.2
 	github.com/BurntSushi/toml v1.1.0
+	github.com/casbin/casbin/v2 v2.44.2
 	github.com/go-ldap/ldap/v3 v3.4.3
 	github.com/gorilla/mux v1.8.0
+	github.com/shirou/gopsutil v3.21.11+incompatible
 	github.com/shirou/gopsutil/v3 v3.22.3
 	golang.org/x/text v0.3.7
 	gopkg.in/alecthomas/kingpin.v2 v2.2.6
