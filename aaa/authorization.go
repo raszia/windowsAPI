@@ -1,22 +1,35 @@
 package aaa
 
-import "github.com/casbin/casbin/v2"
+import (
+	"fmt"
+	"net/http"
 
-const (
-	policyConf = `
-	[request_definition]
-	r = sub, obj, act
-	[policy_definition]
-	p = sub, obj, act
-	[policy_effect]
-	e = some(where (p.eft == allow))
-	[matchers]
-	m = r.sub == p.sub && keyMatch2(r.obj, p.obj) && regexMatch(r.act, p.act)`
+	"windows/config"
+
+	"github.com/casbin/casbin/v2"
 )
 
-var enforcer, _ = casbin.NewEnforcer(policyConf, "path/to/policy.csv")
+var (
+	enforcer    *casbin.Enforcer
+	enforcerErr error
+)
 
-func isAuthorize(user, pass string) bool {
+func isAuthorize(user, pass string, r *http.Request) bool {
 
-	return true
+	if enforcerErr != nil {
+		//TODO: log
+		return false
+	}
+	res, err := enforcer.Enforce(user, pass, r.URL.Path, r.Method)
+	if err != nil {
+		//TODO: log
+		return false
+	}
+	return res
+}
+
+func SetEnforcer() {
+	fmt.Printf("config.MainConfig.AAA().PolicyFilePath: %v\n", config.MainConfig.AAA().PolicyFilePath)
+	fmt.Printf("config.MainConfig.AAA().PolicyModelPath: %v\n", config.MainConfig.AAA().PolicyModelPath)
+	enforcer, enforcerErr = casbin.NewEnforcer(config.MainConfig.AAA().PolicyFilePath, config.MainConfig.AAA().PolicyModelPath)
 }

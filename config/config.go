@@ -11,6 +11,8 @@ var FileDefaultPath = "./config.toml"
 type MainConfigStruct struct {
 	configPath string
 	WebServerS *WebServerConfigStruct `toml:"webServer"`
+	AAAS       *AAAConfigStruct       `toml:"aaa"`
+	Complete   chan bool
 }
 
 type WebServerConfigStruct struct {
@@ -20,9 +22,16 @@ type WebServerConfigStruct struct {
 	Key       string `toml:"Key"`
 	Cert      string `toml:"Cert"`
 }
+type AAAConfigStruct struct {
+	PolicyModelPath string `toml:"PolicyModelPath"`
+	PolicyFilePath  string `toml:"PolicyFilePath"`
+	BypassBool      bool   `toml:"Bypass"`
+}
 
 var MainConfig = &MainConfigStruct{
 	WebServerS: &WebServerConfigStruct{},
+	AAAS:       &AAAConfigStruct{},
+	Complete:   make(chan bool, 100),
 }
 
 func (main *MainConfigStruct) ConfigPathSet(path string) *MainConfigStruct {
@@ -39,6 +48,29 @@ func Main() *MainConfigStruct {
 
 func (main *MainConfigStruct) WebServer() *WebServerConfigStruct {
 	return MainConfig.WebServerS
+}
+
+func (main *MainConfigStruct) AAA() *AAAConfigStruct {
+	return MainConfig.AAAS
+}
+
+func (AAA *AAAConfigStruct) AddModelPolicy(filePath string) *AAAConfigStruct {
+	if filePath != "" {
+		AAA.PolicyModelPath = filePath
+	}
+	return AAA
+}
+
+func (AAA *AAAConfigStruct) AddFilePolicy(filePath string) *AAAConfigStruct {
+	if filePath != "" {
+		AAA.PolicyFilePath = filePath
+	}
+	return AAA
+}
+
+func (AAA *AAAConfigStruct) Bypass(bypass bool) *AAAConfigStruct {
+	AAA.BypassBool = bypass
+	return AAA
 }
 
 func (webConfig *WebServerConfigStruct) AddCertKey(keyFile, certFile string) *WebServerConfigStruct {

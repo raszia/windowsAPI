@@ -4,3 +4,8 @@ HTTPAddr  = ":8081"
 CA        = "./cert/CA.pem"
 Key       = "./cert/ss.key"
 Cert      = "./cert/ss.crt"
+
+[aaa]
+PolicyModelPath = "authModel.conf"
+PolicyFilePath = "authPolicy.csv"
+Bypass = false

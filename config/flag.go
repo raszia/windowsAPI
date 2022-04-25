@@ -10,11 +10,21 @@ func FlagParser() {
 	ca := kingpin.Flag("ca", "CA file path").Default(CADefaultPath).String()
 	key := kingpin.Flag("key", "Private Key file path").Default(KeyDefaultPath).String()
 	cert := kingpin.Flag("cert", "cert file path").Default(CertDefaultPath).String()
+
+	pModel := kingpin.Flag("pmodel", "PolicyModel file path").Default(AuthModelDefaultPath).String()
+	pFile := kingpin.Flag("pfile", "PolicyFile file path").Default(AuthPolicyDefaultPath).String()
+	bypass := kingpin.Flag("authBypass", "No authorization").Default("false").Bool()
 	kingpin.Parse()
 
-	Main().ConfigPathSet(*configPath).
+	Main().
+		ConfigPathSet(*configPath).
 		WebServer().AddTLSAddr(*secureAddr).
 		AddAddr(*Addr).AddCertKey(*key, *cert).
 		AddCA(*ca)
 
+	Main().
+		AAA().AddFilePolicy(*pFile).
+		AddModelPolicy(*pModel).Bypass(*bypass)
+
+	Main().Complete <- true
 }
