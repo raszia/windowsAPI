@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"sync"
 	"syscall"
 	"time"
 	"windows/config"
@@ -52,7 +53,8 @@ func (server *serverStruct) WaitShutdown(stopLog string) {
 	}
 }
 
-func listenHTTP(router *mux.Router) {
+func listenHTTP(router *mux.Router, wg *sync.WaitGroup) {
+	defer wg.Done()
 
 	httpServer := &http.Server{
 		Addr:           config.MainConfig.WebServerS.HttpAddr,
@@ -81,7 +83,9 @@ func listenHTTP(router *mux.Router) {
 
 }
 
-func listenHTTPS(router *mux.Router) {
+func listenHTTPS(router *mux.Router, wg *sync.WaitGroup) {
+	defer wg.Done()
+
 	// caCert, err := ioutil.ReadFile(CA)
 	// if err != nil {
 	// 	log.Fatal(err)

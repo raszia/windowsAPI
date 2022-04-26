@@ -6,6 +6,8 @@ const (
 	CADefaultPath         = "./cert/CA.pem"
 	KeyDefaultPath        = "./cert/ss.key"
 	CertDefaultPath       = "./cert/ss.crt"
-	AuthModelDefaultPath  = "authModel.conf"
-	AuthPolicyDefaultPath = "authPolicy.csv"
+	FalseDefault          = "default false"
+	TrueDefault           = "default true"
+	AuthModelDefaultPath  = "./authModel.conf"
+	AuthPolicyDefaultPath = "./authPolicy.csv"
 )

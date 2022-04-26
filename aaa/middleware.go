@@ -8,7 +8,7 @@ import (
 
 func BasicAuthMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if !config.MainConfig.AAA().BypassBool {
+		if config.MainConfig.AAA().BypassBool == "true" {
 			user, pass, ok := r.BasicAuth()
 			res := utility.ResStruct{
 				Msg:    "unauthorized",

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"sync"
 	"windows/aaa"
 	"windows/config"
 
@@ -17,7 +18,15 @@ func main() {
 
 	// v1
 	AddV1Routes(router.PathPrefix("/v1").Subrouter())
-	go listenHTTP(router)
-	listenHTTPS(router)
 
+	wg := new(sync.WaitGroup)
+	if config.Main().WebServer().DisableHttp == "false" {
+		wg.Add(1)
+		go listenHTTP(router, wg)
+	}
+	if config.Main().WebServer().DisableHttps == "false" {
+		wg.Add(1)
+		go listenHTTPS(router, wg)
+	}
+	wg.Wait()
 }

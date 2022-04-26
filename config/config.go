@@ -16,16 +16,18 @@ type MainConfigStruct struct {
 }
 
 type WebServerConfigStruct struct {
-	HttpsAddr string `toml:"HTTPSAddr"`
-	HttpAddr  string `toml:"HTTPAddr"`
-	Ca        string `toml:"CA"`
-	Key       string `toml:"Key"`
-	Cert      string `toml:"Cert"`
+	HttpsAddr    string `toml:"HTTPSAddr"`
+	HttpAddr     string `toml:"HTTPAddr"`
+	Ca           string `toml:"CA"`
+	Key          string `toml:"Key"`
+	Cert         string `toml:"Cert"`
+	DisableHttp  string `toml:"DisableHttp"`
+	DisableHttps string `toml:"DisableHttps"`
 }
 type AAAConfigStruct struct {
 	PolicyModelPath string `toml:"PolicyModelPath"`
 	PolicyFilePath  string `toml:"PolicyFilePath"`
-	BypassBool      bool   `toml:"Bypass"`
+	BypassBool      string `toml:"Bypass"`
 }
 
 var MainConfig = &MainConfigStruct{
@@ -68,9 +70,37 @@ func (AAA *AAAConfigStruct) AddFilePolicy(filePath string) *AAAConfigStruct {
 	return AAA
 }
 
-func (AAA *AAAConfigStruct) Bypass(bypass bool) *AAAConfigStruct {
+func (AAA *AAAConfigStruct) Bypass(bypass string) *AAAConfigStruct {
+	if AAA.BypassBool != "" && bypass == FalseDefault {
+		return AAA
+	}
+	if bypass == FalseDefault {
+		bypass = "false"
+	}
 	AAA.BypassBool = bypass
 	return AAA
+}
+
+func (webConfig *WebServerConfigStruct) DisableHTTP(dis string) *WebServerConfigStruct {
+	if webConfig.DisableHttp != "" && dis == FalseDefault {
+		return webConfig
+	}
+	if dis == FalseDefault {
+		dis = "false"
+	}
+	webConfig.DisableHttp = dis
+	return webConfig
+}
+
+func (webConfig *WebServerConfigStruct) DisableHTTPS(dis string) *WebServerConfigStruct {
+	if webConfig.DisableHttps != "" && dis == FalseDefault {
+		return webConfig
+	}
+	if dis == FalseDefault {
+		dis = "false"
+	}
+	webConfig.DisableHttps = dis
+	return webConfig
 }
 
 func (webConfig *WebServerConfigStruct) AddKey(keyFile string) *WebServerConfigStruct {
