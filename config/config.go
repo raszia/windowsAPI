@@ -6,7 +6,7 @@ import (
 	"github.com/BurntSushi/toml"
 )
 
-var FileDefaultPath = "./config.toml"
+var configFileDefaultPath = "./config.toml"
 
 type MainConfigStruct struct {
 	configPath string
@@ -35,10 +35,8 @@ var MainConfig = &MainConfigStruct{
 }
 
 func (main *MainConfigStruct) ConfigPathSet(path string) *MainConfigStruct {
-	if path != "" {
-		main.configPath = path
-		LoadMainConfig(path)
-	}
+	main.configPath = path
+	LoadMainConfig(path)
 	return main
 }
 
@@ -55,16 +53,18 @@ func (main *MainConfigStruct) AAA() *AAAConfigStruct {
 }
 
 func (AAA *AAAConfigStruct) AddModelPolicy(filePath string) *AAAConfigStruct {
-	if filePath != "" {
-		AAA.PolicyModelPath = filePath
+	if filePath != "" && filePath == AuthModelDefaultPath {
+		return AAA
 	}
+	AAA.PolicyModelPath = filePath
 	return AAA
 }
 
 func (AAA *AAAConfigStruct) AddFilePolicy(filePath string) *AAAConfigStruct {
-	if filePath != "" {
-		AAA.PolicyFilePath = filePath
+	if filePath != "" && filePath == AuthPolicyDefaultPath {
+		return AAA
 	}
+	AAA.PolicyFilePath = filePath
 	return AAA
 }
 
@@ -73,39 +73,50 @@ func (AAA *AAAConfigStruct) Bypass(bypass bool) *AAAConfigStruct {
 	return AAA
 }
 
-func (webConfig *WebServerConfigStruct) AddCertKey(keyFile, certFile string) *WebServerConfigStruct {
-	if keyFile != "" {
-		webConfig.Key = keyFile
+func (webConfig *WebServerConfigStruct) AddKey(keyFile string) *WebServerConfigStruct {
+	if webConfig.Key != "" && keyFile == KeyDefaultPath {
+		return webConfig
 	}
-	if certFile != "" {
-		webConfig.Cert = certFile
+	webConfig.Key = keyFile
+	return webConfig
+}
+
+func (webConfig *WebServerConfigStruct) AddCert(certFile string) *WebServerConfigStruct {
+	if webConfig.Cert != "" && certFile == CertDefaultPath {
+		return webConfig
 	}
+	webConfig.Cert = certFile
 	return webConfig
 }
 
 func (webConfig *WebServerConfigStruct) AddCA(caFile string) *WebServerConfigStruct {
-	if caFile != "" {
-		webConfig.Ca = caFile
+	if webConfig.Ca != "" && caFile == CADefaultPath {
+		return webConfig
 	}
+	webConfig.Ca = caFile
 	return webConfig
 }
 
 func (webConfig *WebServerConfigStruct) AddTLSAddr(httpsAddr string) *WebServerConfigStruct {
-	if httpsAddr != "" {
-		webConfig.HttpsAddr = httpsAddr
+	if webConfig.HttpsAddr != "" && httpsAddr == HTTPSAddrDefault {
+		return webConfig
 	}
+	webConfig.HttpsAddr = httpsAddr
+
 	return webConfig
 }
 
 func (webConfig *WebServerConfigStruct) AddAddr(httpAddr string) *WebServerConfigStruct {
-	if httpAddr != "" {
-		webConfig.HttpAddr = httpAddr
+	if webConfig.HttpAddr != "" && httpAddr == HTTPAddrDefault {
+		return webConfig
 	}
+	webConfig.HttpAddr = httpAddr
 	return webConfig
 }
 
 func LoadMainConfig(configFilePath string) {
 	_, err := toml.DecodeFile(configFilePath, MainConfig)
-	log.Println(err)
-
+	if err != nil {
+		log.Println(err)
+	}
 }
