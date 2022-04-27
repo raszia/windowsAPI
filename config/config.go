@@ -25,9 +25,11 @@ type WebServerConfigStruct struct {
 	DisableHttps string `toml:"DisableHttps"`
 }
 type AAAConfigStruct struct {
-	PolicyModelPath string `toml:"PolicyModelPath"`
-	PolicyFilePath  string `toml:"PolicyFilePath"`
-	BypassBool      string `toml:"Bypass"`
+	PolicyModelPath    string `toml:"PolicyModelPath"`
+	PolicyFilePath     string `toml:"PolicyFilePath"`
+	AuditingStateBool  string `toml:"Auditing"`
+	AuditingLogAddress string `toml:"AuditingLogAddress"`
+	BypassBool         string `toml:"Bypass"`
 }
 
 var MainConfig = &MainConfigStruct{
@@ -70,6 +72,14 @@ func (AAA *AAAConfigStruct) AddFilePolicy(filePath string) *AAAConfigStruct {
 	return AAA
 }
 
+func (AAA *AAAConfigStruct) AuditFileLog(filePath string) *AAAConfigStruct {
+	if filePath != "" && filePath == AuditDefaultPath {
+		return AAA
+	}
+	AAA.AuditingLogAddress = filePath
+	return AAA
+}
+
 func (AAA *AAAConfigStruct) Bypass(bypass string) *AAAConfigStruct {
 	if AAA.BypassBool != "" && bypass == FalseDefault {
 		return AAA
@@ -78,6 +88,17 @@ func (AAA *AAAConfigStruct) Bypass(bypass string) *AAAConfigStruct {
 		bypass = "false"
 	}
 	AAA.BypassBool = bypass
+	return AAA
+}
+
+func (AAA *AAAConfigStruct) AuditingState(state string) *AAAConfigStruct {
+	if AAA.AuditingStateBool != "" && state == FalseDefault {
+		return AAA
+	}
+	if state == FalseDefault {
+		state = "false"
+	}
+	AAA.AuditingStateBool = state
 	return AAA
 }
 

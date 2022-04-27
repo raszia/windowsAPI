@@ -16,6 +16,8 @@ func FlagParser() {
 	pModel := kingpin.Flag("pmodel", "PolicyModel path for authorization").Default(AuthModelDefaultPath).String()
 	pFile := kingpin.Flag("pfile", "PolicyFile path for authorization").Default(AuthPolicyDefaultPath).String()
 	bypass := kingpin.Flag("authBypass", "No authorization").Default(FalseDefault).String()
+	auditState := kingpin.Flag("auditState", "No audit log").Default(FalseDefault).String()
+	auditFileAddr := kingpin.Flag("auditFileAddr", "audit log file address").Default(AuditDefaultPath).String()
 	kingpin.Parse()
 
 	Main().
@@ -33,7 +35,9 @@ func FlagParser() {
 		AAA().
 		AddFilePolicy(*pFile).
 		AddModelPolicy(*pModel).
-		Bypass(*bypass)
+		Bypass(*bypass).
+		AuditingState(*auditState).
+		AuditFileLog(*auditFileAddr)
 
 	Main().Complete <- true
 }

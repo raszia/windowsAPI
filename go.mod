@@ -7,10 +7,12 @@ require (
 	github.com/casbin/casbin/v2 v2.44.2
 	github.com/go-ldap/ldap/v3 v3.4.3
 	github.com/gorilla/mux v1.8.0
+	github.com/rs/zerolog v1.26.1
 	github.com/shirou/gopsutil v3.21.11+incompatible
 	github.com/shirou/gopsutil/v3 v3.22.3
 	golang.org/x/text v0.3.7
 	gopkg.in/alecthomas/kingpin.v2 v2.2.6
+	gopkg.in/natefinch/lumberjack.v2 v2.0.0
 )
 
 require (
@@ -28,5 +30,4 @@ require (
 	github.com/yusufpapurcu/wmi v1.2.2 // indirect
 	golang.org/x/crypto v0.0.0-20220331220935-ae2d96664a29 // indirect
 	golang.org/x/sys v0.0.0-20220128215802-99c3d69c2c27 // indirect
-	golang.org/x/xerrors v0.0.0-20200804184101-5ec99f83aff1 // indirect
 )

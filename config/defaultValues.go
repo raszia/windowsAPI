@@ -10,4 +10,5 @@ const (
 	TrueDefault           = "default true"
 	AuthModelDefaultPath  = "./authModel.conf"
 	AuthPolicyDefaultPath = "./authPolicy.csv"
+	AuditDefaultPath      = "./audit.log"
 )

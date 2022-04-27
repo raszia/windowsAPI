@@ -1,8 +1,10 @@
 package main
 
 import (
+	"log"
 	"sync"
 	"windows/aaa"
+	"windows/aaa/audit"
 	"windows/config"
 
 	"github.com/gorilla/mux"
@@ -13,7 +15,11 @@ func main() {
 	// config.LoadMainConfig(config.FileDefaultPath)
 	config.FlagParser()
 	router := mux.NewRouter()
-	aaa.SetEnforcer()
+	if err := aaa.SetEnforcer(); err != nil {
+		log.Fatal(err)
+	}
+	audit.CreateAuditLogger()
+
 	AddRoutes(router)
 
 	// v1

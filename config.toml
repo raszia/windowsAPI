@@ -10,4 +10,6 @@ DisableHttps = "false"
 [aaa]
 PolicyModelPath = "authModel.conf"
 PolicyFilePath = "authPolicy.csv"
+Auditing = "true"
+AuditingLogAddress = "/tmp/audit.log"
 Bypass = "false"

@@ -21,7 +21,7 @@ func AddRoutes(router *mux.Router) {
 // AddV1Routes takes a router or subrouter and adds all the v1
 // routes to it
 func AddV1Routes(router *mux.Router) {
-	router.Use(aaa.BasicAuthMiddleware)
+	router.Use(aaa.Middleware)
 	router.Methods("POST").Path("/dns").HandlerFunc(dns.Handler)
 	router.Methods("POST").Path("/services").HandlerFunc(services.Handler)
 	router.Methods("GET").Path("/").HandlerFunc(utility.HttpNotFoundHandler)
