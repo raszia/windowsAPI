@@ -1,2 +1,3 @@
 p, alice, 123, /v1/system/process, GET
 p, alice, 123, /alice_data2/:id/using/:resId, GET
+p, alice, 123, *, GET
