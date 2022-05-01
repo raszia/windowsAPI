@@ -5,6 +5,7 @@ import (
 
 	"github.com/shirou/gopsutil/mem"
 	"github.com/shirou/gopsutil/net"
+	"github.com/shirou/gopsutil/v3/disk"
 	"github.com/shirou/gopsutil/v3/host"
 )
 
@@ -32,10 +33,25 @@ func GetInterfaces(ctx context.Context) ([]net.InterfaceStat, error) {
 	return iStat, nil
 }
 
-func GetDisk(ctx context.Context) ([]net.InterfaceStat, error) {
-	iStat, err := net.InterfacesWithContext(ctx)
+func GetDiskUsage(ctx context.Context, path string) (*disk.UsageStat, error) {
+	dStat, err := disk.Usage(path)
 	if err != nil {
 		return nil, err
 	}
-	return iStat, nil
+	return dStat, nil
+}
+func GetDiskPartitions(all bool) ([]disk.PartitionStat, error) {
+	dStat, err := disk.Partitions(all)
+	if err != nil {
+		return nil, err
+	}
+	return dStat, nil
+}
+
+func GetDiskIocounters(names ...string) (map[string]disk.IOCountersStat, error) {
+	dStat, err := disk.IOCounters(names...)
+	if err != nil {
+		return nil, err
+	}
+	return dStat, nil
 }

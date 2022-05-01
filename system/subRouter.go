@@ -2,6 +2,7 @@ package system
 
 import (
 	"net/http"
+	"strings"
 	"windows/utility"
 
 	"github.com/gorilla/mux"
@@ -18,12 +19,26 @@ func SubRoute(router *mux.Router) {
 func diskHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 
+	var (
+		res interface{}
+		err error
+	)
 	switch vars["operation"] {
 	case "usage":
+		res, err = GetDiskUsage(r.Context(), r.URL.Query().Get("path"))
 	case "partitions":
+		all := r.URL.Query().Get("all")
+		if all == "true" {
+			res, err = GetDiskPartitions(true)
+		} else {
+			res, err = GetDiskPartitions(false)
+		}
+
 	case "iocounters":
+		namesList := strings.Split(r.URL.Query().Get("names"), ",")
+		res, err = GetDiskIocounters(namesList...)
 	}
-	iStat, err := GetInterfaces(r.Context())
+
 	if err != nil {
 		utility.HttpConnectionClose(w, r, http.StatusNotAcceptable, &utility.ResStruct{
 			Msg:    err.Error(),
@@ -31,7 +46,7 @@ func diskHandler(w http.ResponseWriter, r *http.Request) {
 		})
 		return
 	}
-	utility.HttpSendOK(w, r, iStat)
+	utility.HttpSendOK(w, r, res)
 }
 
 func interfaceHandler(w http.ResponseWriter, r *http.Request) {
