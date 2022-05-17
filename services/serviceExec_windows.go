@@ -1,13 +1,10 @@
+//go:build windows
+// +build windows
+
 package services
 
 import (
 	"windows/command"
-)
-
-const (
-	serviceActionStop    = "stop"
-	serviceActionSart    = "start"
-	serviceActionRestart = "restart"
 )
 
 func (req *ReqStruct) execute() error {

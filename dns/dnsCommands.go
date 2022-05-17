@@ -1,6 +1,7 @@
 package dns
 
 import (
+	"context"
 	"windows/command"
 )
 
@@ -15,14 +16,35 @@ const (
 
 	RecordArgDelCmd = "/recordDelete"
 	RecordArgAddCmd = "/recordAdd"
+	infoArg         = "/info"
+	enumZonesArg    = "/enumZones"
+	CMDdns          = "dnscmd"
 )
+
+func getInfo(ctx context.Context) ([]byte, error) {
+	res, err := command.CmdCommand(CMDdns).ArgAdd(infoArg).RunOutput(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	return res.GetStdOut().Bytes(), nil
+}
+
+func getZones(ctx context.Context) ([]byte, error) {
+	res, err := command.CmdCommand(CMDdns).ArgAdd(enumZonesArg).RunOutput(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	return res.GetStdOut().Bytes(), nil
+}
 
 //microsoft don't support edit. we must delete and add the record again
 func (reqEditRecord *EditRecordStruct) execute(action string) error {
 
 	if action != "addRecord" {
 		//delete a record
-		if err := command.CmdCommand(command.CMDdns).
+		if err := command.CmdCommand(CMDdns).
 			ArgAdd(RecordArgDelCmd).
 			ArgAdd(reqEditRecord.ZoneName).
 			ArgAdd(reqEditRecord.RecordName).

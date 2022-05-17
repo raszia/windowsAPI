@@ -5,6 +5,13 @@ import (
 	"windows/utility"
 )
 
+const (
+	serviceActionStop    = "stop"
+	serviceActionSart    = "start"
+	serviceActionRestart = "restart"
+	serviceActionReload  = "reload"
+)
+
 type ReqStruct struct {
 	ServiceName   string `json:"serviceName"`
 	ServiceAction string `json:"serviceAction"`
@@ -14,7 +21,7 @@ type respStruct struct {
 	Msg    string `json:"msg"`
 }
 
-func Handler(w http.ResponseWriter, r *http.Request) {
+func actionHandler(w http.ResponseWriter, r *http.Request) {
 	req := ReqStruct{}
 	res := respStruct{
 		Status: "failed",

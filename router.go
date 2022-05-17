@@ -22,10 +22,12 @@ func AddRoutes(router *mux.Router) {
 // routes to it
 func AddV1Routes(router *mux.Router) {
 	router.Use(aaa.Middleware)
-	router.Methods("POST").Path("/dns").HandlerFunc(dns.Handler)
-	router.Methods("POST").Path("/services").HandlerFunc(services.Handler)
+	// router.Methods("POST").Path("/dns").HandlerFunc(dns.Handler)
+	// router.Methods("POST").Path("/services").HandlerFunc(services.Handler)
 	router.Methods("GET").Path("/").HandlerFunc(utility.HttpNotFoundHandler)
 	// router.Methods("POST").Path("/ldap/userInfo").HandlerFunc(ldap.Handler)
+	dns.SubRoute(router.PathPrefix("/dns").Subrouter())
 	ldap.SubRoute(router.PathPrefix("/ldap").Subrouter())
 	system.SubRoute(router.PathPrefix("/system").Subrouter())
+	services.SubRoute(router.PathPrefix("/services").Subrouter())
 }

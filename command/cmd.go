@@ -2,6 +2,7 @@ package command
 
 import (
 	"bytes"
+	"context"
 	"fmt"
 	"os/exec"
 	"strings"
@@ -41,19 +42,22 @@ func (cmd *cmdCommandStruct) Run() error {
 }
 
 //run and get output
-func (cmd *cmdCommandStruct) RunOutput() (*cmdResultStruct, error) {
-	x := exec.Command(cmd.command, cmd.args...)
+func (cmd *cmdCommandStruct) RunOutput(ctx context.Context) (*cmdResultStruct, error) {
+	ec := exec.Command(cmd.command, cmd.args...)
+
 	result := &cmdResultStruct{}
-	x.Stdout = &result.stdOut
-	x.Stderr = &result.stdErr
-	err := x.Run()
+	ec.Stdout = &result.stdOut
+	ec.Stderr = &result.stdErr
+
+	err := ec.Run()
+
 	return result, err
 }
 
-func (res *cmdResultStruct) GetStdOut() bytes.Buffer {
-	return res.stdOut
+func (res *cmdResultStruct) GetStdOut() *bytes.Buffer {
+	return &res.stdOut
 }
 
-func (res *cmdResultStruct) GetStdErr() bytes.Buffer {
-	return res.stdErr
+func (res *cmdResultStruct) GetStdErr() *bytes.Buffer {
+	return &res.stdErr
 }

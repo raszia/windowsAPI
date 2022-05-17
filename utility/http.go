@@ -38,6 +38,12 @@ func HttpSendOK(w http.ResponseWriter, r *http.Request, model interface{}) {
 	w.Write(body)
 }
 
+func HttpSendOKByte(w http.ResponseWriter, r *http.Request, body []byte) {
+	// w.Header().Add("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	w.Write(body)
+}
+
 func HttpNotFoundHandler(w http.ResponseWriter, r *http.Request) {
 	body, _ := json.Marshal(map[string]string{"status": "failed", "msg": "Could not get the requested route."})
 	w.Header().Set("Content-Type", "application/json")
