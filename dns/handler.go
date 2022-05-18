@@ -2,69 +2,71 @@ package dns
 
 import (
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"net/http"
+	"windows/utility"
+
+	"github.com/gorilla/mux"
 )
 
-type ReqStruct struct {
-	Type       string           `json:"type"` //editRecord,addRecord,removeRecord
-	EditRecord EditRecordStruct `json:"editRecord"`
+func infoHandler(w http.ResponseWriter, r *http.Request) {
+	info, err := getInfo(r.Context())
+	if err != nil {
+		utility.HttpConnectionClose(w, r, http.StatusNotAcceptable, &utility.ResStruct{
+			Msg:    err.Error(),
+			Status: "failed",
+		})
+		return
+	}
+	utility.HttpSendOKByte(w, r, info)
 }
+
+func zonesHandler(w http.ResponseWriter, r *http.Request) {
+	info, err := getZones(r.Context())
+	if err != nil {
+		utility.HttpConnectionClose(w, r, http.StatusNotAcceptable, &utility.ResStruct{
+			Msg:    err.Error(),
+			Status: "failed",
+		})
+		return
+	}
+	utility.HttpSendOKByte(w, r, info)
+}
+
 type respStruct struct {
 	Status string `json:"status"`
 	Msg    string `json:"msg"`
 }
 
-type EditRecordStruct struct {
-	ZoneName   string `json:"zoneName"`   //"myco.local"
-	RecordName string `json:"recordName"` //"test"
-	RecordType string `json:"recordType"` //"cname"
-	RecordData string `json:"recordData"` //"test2.myco.local"
-}
+//{"recordName":"test","recordType":"cname","recordData":"test.test.test4"}
+func recordActionHandler(w http.ResponseWriter, r *http.Request) {
 
-//{"type":"editRecord","editRecord":{"zoneName":"my-co.ir","recordName":"test","recordType":"cname","recordData":"test.test.test4"}}
-func Handler(w http.ResponseWriter, r *http.Request) {
-
+	vars := mux.Vars(r)
+	req := &recordStruct{
+		ZoneName:   vars["zoneName"],
+		RecordName: vars["recordName"],
+	}
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
-		fmt.Println(err)
+		utility.HttpConnectionClose(w, r, http.StatusNotAcceptable, &utility.ResStruct{
+			Msg:    err.Error(),
+			Status: "failed",
+		})
 		return
 	}
-	req := &ReqStruct{}
-	if err := json.Unmarshal(body, req); err != nil {
-		fmt.Println(err)
-		return
-	}
-	resp := requestDispatch(req)
-	respBody, _ := json.Marshal(resp)
-	if resp.Status == "failed" {
-		w.Header().Add("connection", "close")
-		w.WriteHeader(http.StatusBadGateway)
-	}
-	w.Header().Set("Content-Type", "application/json")
-	w.Write(respBody)
-}
 
-func requestDispatch(req *ReqStruct) *respStruct {
+	json.Unmarshal(body, req)
 
-	resp := &respStruct{
-		Status: "failed",
-	}
-	switch req.Type {
-	case "editRecord":
-	case "addRecord":
-	case "deleteRecord":
-	default:
-		resp.Msg = "bad req type"
-		return resp
-	}
-	err := req.EditRecord.execute(req.Type)
+	err = recordAction(r.Context(), req, r.Method)
 	if err != nil {
-		resp.Msg = err.Error()
-		return resp
+		utility.HttpConnectionClose(w, r, http.StatusNotAcceptable, &utility.ResStruct{
+			Msg:    err.Error(),
+			Status: "failed",
+		})
+		return
 	}
-
-	resp.Status = "ok"
-	return resp
+	utility.HttpSendOK(w, r, &respStruct{
+		Status: "ok",
+		Msg:    "successful",
+	})
 }

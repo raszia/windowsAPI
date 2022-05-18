@@ -2,6 +2,7 @@ package dns
 
 import (
 	"context"
+	"net/http"
 	"windows/command"
 )
 
@@ -18,8 +19,17 @@ const (
 	RecordArgAddCmd = "/recordAdd"
 	infoArg         = "/info"
 	enumZonesArg    = "/enumZones"
-	CMDdns          = "dnscmd"
+	forceArg        = "/f"
+
+	CMDdns = "dnscmd"
 )
+
+type recordStruct struct {
+	ZoneName   string //"myco.local"
+	RecordName string //"test"
+	RecordType string `json:"recordType"` //"cname"
+	RecordData string `json:"recordData"` //"test2.myco.local"
+}
 
 func getInfo(ctx context.Context) ([]byte, error) {
 	res, err := command.CmdCommand(CMDdns).ArgAdd(infoArg).RunOutput(ctx)
@@ -39,35 +49,30 @@ func getZones(ctx context.Context) ([]byte, error) {
 	return res.GetStdOut().Bytes(), nil
 }
 
-//microsoft don't support edit. we must delete and add the record again
-func (reqEditRecord *EditRecordStruct) execute(action string) error {
+func recordAction(ctx context.Context, record *recordStruct, method string) error {
 
-	if action != "addRecord" {
-		//delete a record
+	switch method {
+	case http.MethodDelete:
 		if err := command.CmdCommand(CMDdns).
 			ArgAdd(RecordArgDelCmd).
-			ArgAdd(reqEditRecord.ZoneName).
-			ArgAdd(reqEditRecord.RecordName).
-			ArgAdd(reqEditRecord.RecordType).
-			ArgAdd(command.CMDArgForce).
+			ArgAdd(record.ZoneName).
+			ArgAdd(record.RecordName).
+			ArgAdd(record.RecordType).
+			ArgAdd(forceArg).
 			Run(); err != nil {
 			return err
 		}
-		if action == "deleteRecord" {
-			return nil
+	case http.MethodPost:
+		if err := command.CmdCommand(CMDdns).
+			ArgAdd(RecordArgAddCmd).
+			ArgAdd(record.ZoneName).
+			ArgAdd(record.RecordName).
+			ArgAdd(record.RecordType).
+			ArgAdd(record.RecordData).
+			Run(); err != nil {
+			return err
 		}
 	}
 
-	if action != "deleteRecord" {
-		if err := command.CmdCommand(command.CMDdns).
-			ArgAdd(RecordArgAddCmd).
-			ArgAdd(reqEditRecord.ZoneName).
-			ArgAdd(reqEditRecord.RecordName).
-			ArgAdd(reqEditRecord.RecordType).
-			ArgAdd(reqEditRecord.RecordData).
-			Run(); err != nil {
-			return err
-		}
-	}
 	return nil
 }
