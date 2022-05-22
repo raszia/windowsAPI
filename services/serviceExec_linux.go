@@ -7,6 +7,8 @@ import (
 	"windows/command"
 )
 
+const CMDServiceLinux = "service"
+
 func (req *ReqStruct) execute() error {
-	return command.CmdCommand(command.CMDServiceLinux).ArgAdd(req.ServiceName).ArgAdd(req.ServiceAction).Run()
+	return command.CmdCommand(CMDServiceLinux).ArgAdd(req.ServiceName).ArgAdd(req.ServiceAction).Run()
 }
